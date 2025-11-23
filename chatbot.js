@@ -1,7 +1,20 @@
 require('dotenv').config();
 const qrcode = require('qrcode-terminal');
-const { Client, MessageMedia } = require('whatsapp-web.js');
-const client = new Client();
+const { Client, MessageMedia, LocalAuth } = require('whatsapp-web.js');
+
+const client = new Client({
+    authStrategy: new LocalAuth(),
+    puppeteer: {
+        headless: true,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-gpu',
+            '--disable-dev-shm-usage'
+        ],
+        executablePath: process.env.CHROMIUM_PATH
+    }
+});
 
 client.on('qr', qr => {
     console.log('\n\n' + '='.repeat(50));
