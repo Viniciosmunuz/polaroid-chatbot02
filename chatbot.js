@@ -2,19 +2,33 @@ require('dotenv').config();
 const qrcode = require('qrcode-terminal');
 const { Client, MessageMedia, LocalAuth } = require('whatsapp-web.js');
 
-const client = new Client({
+const puppeteerArgs = [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-gpu',
+    '--disable-dev-shm-usage',
+    '--disable-web-resources',
+    '--disable-default-apps',
+    '--disable-extensions'
+];
+
+// Se em ambiente produção (Railway), usar configuração otimizada
+const isProduction = process.env.ENVIRONMENT === 'production' || process.env.NODE_ENV === 'production';
+
+const clientConfig = {
     authStrategy: new LocalAuth(),
     puppeteer: {
         headless: true,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-gpu',
-            '--disable-dev-shm-usage'
-        ],
-        executablePath: process.env.CHROMIUM_PATH
+        args: puppeteerArgs
     }
-});
+};
+
+// No Railway, usar chrome customizado se disponível
+if (isProduction && process.env.PUPPETEER_EXECUTABLE_PATH) {
+    clientConfig.puppeteer.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+}
+
+const client = new Client(clientConfig);
 
 client.on('qr', qr => {
     console.log('\n\n' + '='.repeat(50));
