@@ -4,7 +4,11 @@ const { Client, MessageMedia } = require('whatsapp-web.js');
 const client = new Client();
 
 client.on('qr', qr => {
+    console.log('\n\n' + '='.repeat(50));
+    console.log('📱 ESCANEIE O QR CODE ABAIXO COM SEU WHATSAPP');
+    console.log('='.repeat(50) + '\n');
     qrcode.generate(qr, {small: true});
+    console.log('\n' + '='.repeat(50) + '\n');
 });
 
 client.on('ready', () => {
